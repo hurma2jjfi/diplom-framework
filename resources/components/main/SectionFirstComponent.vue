@@ -79,7 +79,10 @@
           <div></div><div></div>
         </div>
       </div>
+
       <div v-if="error" class="error">{{ error }}</div>
+
+       <div class="catalog">НАШИ АВТОМОБИЛИ</div>
 
       <div v-if="cars.length" class="car-list">
   <router-link style="text-decoration: none; color: none;"
@@ -104,6 +107,60 @@
 </div>
 <div v-else class="no-cars">Машины не найдены.</div>
 
+
+<div class="why__carshering">
+            ПОЧЕМУ КАРШЕРИНГ?
+        </div>
+
+   <div class="box-1">
+    <div class="box__inner-1">
+      <img
+        id="img1"
+        src="../../../public/img/mask1.svg"
+        alt=""
+        @click="toggleInfo(1)"
+        :class="{ rotating: rotatingIndex === 1 }"
+      />
+      <img
+        id="img2"
+        src="../../../public/img/mask2.svg"
+        alt=""
+        @click="toggleInfo(2)"
+        :class="{ rotating: rotatingIndex === 2 }"
+      />
+    </div>
+
+    <transition name="fade">
+      <div v-if="showInfo" class="popover" :style="popoverStyle">
+        <ul>
+          <li v-for="(advantage, index) in advantages" :key="index" :style="flyStyle(index)">
+            {{ advantage }}
+          </li>
+        </ul>
+      </div>
+    </transition>
+  </div>
+
+
+  <div class="next__block__register">
+
+
+    <div class="wrap__register">
+    <h1>ВАШ КЛЮЧ ОТ <br>МАШИНЫ — НАШ <br>СЕРВИС</h1>
+    <p>Зарегистрируйтесь и авторизуйтесь для оформления заявки</p>
+    <router-link to="/register">
+    <button class="register">Регистрация</button></router-link>
+    <img class="phone__img" src="../../../public//img/phone.png" alt="">
+
+  </div>
+
+  </div>
+
+
+
+
+
+
     </div>
 
     <AIAssistant
@@ -112,13 +169,12 @@
   :carsCount="cars.length"
   :error="error"
 />
-
     <div class="circle"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch, nextTick } from 'vue';
 import CustomSelect from '../ui/CustomSelect.vue';
 import AIAssistant from '../ui/AIAssistant.vue';
 import axios from 'axios';
@@ -127,6 +183,55 @@ const cars = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const defaultImage = '/storage/cars/default_car.jpg';
+
+
+
+
+
+const rotatingIndex = ref(null);
+const showInfo = ref(false);
+const popoverStyle = reactive({});
+
+const advantages = [
+  '+ Экономия времени и денег',
+  '+ Свобода передвижения',
+  '+ Отсутствие забот о техническом обслуживании',
+  '+ Экологичность и современные технологии',
+  '+ Удобство аренды без лишних документов',
+];
+
+// Позиция поповера рядом с картинкой
+function toggleInfo(index) {
+  if (rotatingIndex.value === index) {
+    // Закрываем если повторно кликнули
+    rotatingIndex.value = null;
+    showInfo.value = false;
+  } else {
+    rotatingIndex.value = index;
+    showInfo.value = false;
+    nextTick(() => {
+      showInfo.value = true;
+      setPopoverPosition(index);
+    });
+  }
+}
+
+function setPopoverPosition(index) {
+  const img = document.getElementById(`img${index}`);
+  if (!img) return;
+  const rect = img.getBoundingClientRect();
+  popoverStyle.top = `${rect.bottom + window.scrollY + 10}px`;
+  popoverStyle.left = `${rect.left + window.scrollX}px`;
+}
+
+// Анимация "летающих" преимуществ
+function flyStyle(i) {
+  return {
+    animationDelay: `${i * 150}ms`,
+  };
+}
+
+
 
 const filters = reactive({
   brand: '',
@@ -311,6 +416,7 @@ onMounted(() => {
   font-size: 32px;
   margin-bottom: 40px;
   text-align: center;
+  z-index: 1000;
 }
 
 .filters-form {
@@ -514,5 +620,145 @@ onMounted(() => {
 .no-cars {
   color: red;
 }
+
+
+.why__carshering {
+  font-size: 32px;
+  padding-top: 5rem;
+}
+
+.box-1 {
+  width: 980px;
+  height: 517px;
+  border-radius: 16px;
+  background-color: #E2EAFF;
+  margin-top: 5rem;
+  padding: 50px 50px 0px 50px;
+}
+
+.box__inner-1 {
+  height: 413px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+
+}
+
+.box__inner-1 #img1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.box__inner-1 #img2 {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.box__inner-1 img {
+  cursor: pointer;
+  transition: transform 1s ease;
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.rotating {
+  transform: rotate(360deg);
+  transition: transform 1s ease;
+}
+
+.popover {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 20px 24px;
+  max-width: 280px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #333;
+  z-index: 1000;
+}
+
+.popover ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.popover li {
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: flyIn 0.5s forwards;
+  margin-bottom: 10px;
+}
+
+.popover li:last-child {
+  margin-bottom: 0;
+}
+
+@keyframes flyIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Плавное появление/исчезновение поповера */
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.next__block__register {
+  width: 980px;
+  height: 517px;
+  background: linear-gradient(to left, #FF0B8F, #F46767);
+  margin-top: 5rem;
+  border-radius: 16px;
+  padding: 0px 50px 0px 50px;
+  position: relative;
+}
+
+p {
+  font-family: 'Oswald';
+}
+
+.register {
+  padding: 16px 50px;
+  font-size: 20px;
+  color: #fff;
+  border: 1px solid #fff;
+  background: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.wrap__register {
+  padding: 100px 424px 102px 70px;
+}
+
+.wrap__register p {
+  margin-top: 25px;
+}
+
+.wrap__register button {
+  margin-top: 83px;
+}
+
+.phone__img {
+  position: absolute;
+  top: 0;
+  right: 60px;
+}
+
+.catalog {
+  font-size: 32px;
+  margin-bottom: 5rem;
+}
+
 
 </style>

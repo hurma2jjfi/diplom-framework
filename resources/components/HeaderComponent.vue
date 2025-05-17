@@ -5,7 +5,14 @@
         <router-link to="/"><img src="/public/img/logo.svg" alt="Логотип" /></router-link>
       </div>
       <nav class="nav">
-        <router-link to="/">Афиша</router-link>
+        <router-link
+          to="/orders"
+          class="nav-link-orders"
+          v-if="userStore.isAuthenticated"
+        >
+          Заказы
+          <span class="orders-badge" v-if="ordersCount > 0">{{ ordersCount }}</span>
+        </router-link>
         <router-link to="/">О нас</router-link>
         <router-link to="/">Прайс-лист</router-link>
         <router-link to="/">Забронировать</router-link>
@@ -15,13 +22,12 @@
         <router-link to="/register" class="btn register-btn">Зарегистрироваться</router-link>
         <router-link to="/login" class="btn login-btn">Войти</router-link>
       </div>
-      
 
       <div v-else class="user-profile" ref="profileMenu">
-        <img 
-          v-if="userStore.avatarUrl" 
-          :src="userStore.avatarUrl" 
-          alt="Аватар" 
+        <img
+          v-if="userStore.avatarUrl"
+          :src="userStore.avatarUrl"
+          alt="Аватар"
           class="avatar"
         />
         <span class="user-name">{{ userStore.name }}</span>
@@ -41,27 +47,24 @@
                 <div class="menu-username">{{ userStore.name }}</div>
               </div>
 
-              
               <router-link to="/settings" class="menu-item compact" @click="closeMenu">
-  <img width="18" height="18" src="../../public/img/settings.svg" alt="Настройки" />
-  Настройки
-</router-link>
+                <img width="18" height="18" src="../../public/img/settings.svg" alt="Настройки" />
+                Настройки
+              </router-link>
 
-<div class="menu-item compact">
-  <img src="../../public/img/ai.svg" alt="">
-  Искусственный интеллект
-  <label class="switch">
-    <input type="checkbox" v-model="aiEnabled" @change="onAISwitchChange" />
-    <span class="slider"></span>
-  </label>
-</div>
+              <div class="menu-item compact">
+                <img src="../../public/img/ai.svg" alt="">
+                Искусственный интеллект
+                <label class="switch">
+                  <input type="checkbox" v-model="aiEnabled" @change="onAISwitchChange" />
+                  <span class="slider"></span>
+                </label>
+              </div>
 
-              
               <div class="menu-item compact" @click="handleLogout">
                 <img width="18" height="18" src="../../public/img/logout.svg" alt="">
                 Выйти
               </div>
-
             </div>
           </div>
         </transition>
@@ -71,36 +74,47 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useUserStore } from '@/stores/user';
+import axios from 'axios';
 
-
-
+// AI переключатель
 const aiEnabled = ref(true);
-
 onMounted(() => {
-  // Загружаем состояние из localStorage
   const saved = localStorage.getItem('aiEnabled');
   aiEnabled.value = saved === null ? true : saved === 'true';
 });
-
 function onAISwitchChange() {
   localStorage.setItem('aiEnabled', aiEnabled.value);
-  // Можно отправить глобальное событие или использовать store
   window.dispatchEvent(new CustomEvent('ai-switch', { detail: aiEnabled.value }));
 }
 
-
+// User store и меню
 const userStore = useUserStore();
 const menuOpen = ref(false);
 const profileMenu = ref(null);
 
-const handleLogout = () => {
-  userStore.logout();
-  menuOpen.value = false;
-  window.location.href = '/';
-};
+// Счётчик заказов
+const ordersCount = ref(0);
 
+// Функция получения количества заказов
+async function fetchOrdersCount() {
+  if (userStore.isAuthenticated) {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/car-bookings/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      ordersCount.value = Array.isArray(response.data) ? response.data.length : 0;
+    } catch (e) {
+      ordersCount.value = 0;
+    }
+  } else {
+    ordersCount.value = 0;
+  }
+}
+
+// Логика меню пользователя
 function toggleMenu() {
   menuOpen.value = !menuOpen.value;
 }
@@ -114,16 +128,90 @@ function handleClickOutside(event) {
   }
 }
 
-onMounted(() => {
-  userStore.fetchUser();
+// Выход из аккаунта
+const handleLogout = () => {
+  userStore.logout();
+  menuOpen.value = false;
+  window.location.href = '/';
+};
+
+// При монтировании
+onMounted(async () => {
+  await userStore.fetchUser();
+  fetchOrdersCount();
   document.addEventListener('click', handleClickOutside);
 });
+
+// При размонтировании
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
+// Следим за изменением авторизации, чтобы обновлять счётчик заказов
+watch(() => userStore.isAuthenticated, (newVal) => {
+  if (newVal) {
+    fetchOrdersCount();
+  } else {
+    ordersCount.value = 0;
+  }
+});
+
+
+onMounted(() => {
+  // ...ваш код...
+  window.addEventListener('orders-updated', fetchOrdersCount);
+  // ...
+});
+onBeforeUnmount(() => {
+  // ...ваш код...
+  window.removeEventListener('orders-updated', fetchOrdersCount);
+});
+
 </script>
 
+
+
+
+
 <style lang="scss" scoped>
+.nav-link-orders {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  margin-right: 18px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-link-orders:hover {
+  color: #4fa3f7;
+}
+
+.orders-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 7px;
+  min-width: 28px;
+  height: 28px;
+  background: linear-gradient(to left, #FF0B8F, #F46767);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(80,140,255,0.13);
+  border: 2px solid #222b3a;
+  letter-spacing: 0.01em;
+  transition: background 0.2s;
+  animation: popIn 0.5s;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
 
 .ai-switch-row {
   display: flex;
