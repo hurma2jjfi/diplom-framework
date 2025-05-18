@@ -2,7 +2,7 @@
   <div class="container">
     <header>
       <div class="logo">
-        <router-link to="/"><img src="/public/img/logo.svg" alt="Логотип" /></router-link>
+        <router-link to="/"><img src="/public/img/logo2.svg" alt="Логотип" /></router-link>
       </div>
       <nav class="nav">
         <router-link

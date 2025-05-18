@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Время создания: Май 17 2025 г., 12:30
+-- Время создания: Май 18 2025 г., 21:19
 -- Версия сервера: 8.0.30
 -- Версия PHP: 8.1.9
 
@@ -60,6 +60,33 @@ INSERT INTO `cars` (`id`, `brand`, `model`, `license_plate`, `color`, `year`, `t
 (8, 'Mazda', 'CX-5', 'H234PQ77', 'Красный', 2020, 'Автомат', 'Бензин', 5, 'Ростов-на-Дону', '47.2357000', '39.7015000', 'Доступен', '580.00', '/storage/cars/mazda-cx-5.jpg', '2025-05-16 11:55:20', '2025-05-16 11:55:20'),
 (9, 'Audi', 'A4', 'I567RS77', 'Черный', 2019, 'Автомат', 'Бензин', 5, 'Уфа', '54.7388000', '55.9721000', 'Доступен', '750.00', '/storage/cars/audi_a4.jpg', '2025-05-16 11:55:20', '2025-05-16 11:55:20'),
 (10, 'BMW', 'X3', 'J890TU77', 'Синий', 2021, 'Автомат', 'Бензин', 5, 'Краснодар', '45.0355000', '38.9753000', 'Доступен', '800.00', '/storage/cars/bmw_x3.jpg', '2025-05-16 11:55:20', '2025-05-16 11:55:20');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `car_bookings`
+--
+
+CREATE TABLE `car_bookings` (
+  `id` bigint UNSIGNED NOT NULL,
+  `car_id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `license_series` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `license_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_time` timestamp NOT NULL,
+  `end_time` timestamp NOT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  `status` enum('В ожидании','Подтверждено','Отклонено') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'В ожидании',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Дамп данных таблицы `car_bookings`
+--
+
+INSERT INTO `car_bookings` (`id`, `car_id`, `user_id`, `license_series`, `license_number`, `start_time`, `end_time`, `total_price`, `status`, `created_at`, `updated_at`) VALUES
+(15, 2, 1, '321321', '231321', '2025-05-18 18:53:00', '2025-05-25 18:53:00', '75600.00', 'Отклонено', '2025-05-18 14:53:46', '2025-05-18 14:53:56');
 
 -- --------------------------------------------------------
 
@@ -123,7 +150,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (4, '2019_12_14_000001_create_personal_access_tokens_table', 1),
 (5, '2025_05_13_090122_add_is_verified_to_users_table', 2),
 (6, '2025_05_13_090825_add_email_verification_token_to_users_table', 3),
-(7, '2025_05_16_114706_create_cars_table', 4);
+(7, '2025_05_16_114706_create_cars_table', 4),
+(8, '2025_05_17_093715_create_car_bookings_table', 5),
+(9, '2025_05_17_101057_add_license_fields_to_car_bookings_table', 6),
+(10, '2025_05_17_163359_add_role_to_users_table', 7);
 
 -- --------------------------------------------------------
 
@@ -251,7 +281,27 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (89, 'App\\Models\\User', 1, 'auth_token', '4d12408f671590ee3af32dbf0ce696908aedc708663f8d5ac31c8dc7aef2bc59', '[\"*\"]', '2025-05-16 16:25:54', NULL, '2025-05-16 15:28:38', '2025-05-16 16:25:54'),
 (90, 'App\\Models\\User', 1, 'auth_token', '99f1de50a98ac317f59bb2b5b35029070c7858b8e1f49bd1f06ddce5d7590e47', '[\"*\"]', '2025-05-17 02:53:13', NULL, '2025-05-16 16:35:34', '2025-05-17 02:53:13'),
 (91, 'App\\Models\\User', 1, 'auth_token', 'aceb85679d93eea8f580556ff9d9a08c0acfdbbc905f85c396aa6f4a121ba9a9', '[\"*\"]', '2025-05-17 05:59:09', NULL, '2025-05-17 02:54:25', '2025-05-17 05:59:09'),
-(92, 'App\\Models\\User', 1, 'auth_token', '1aab74d2ffd2727094823b3ff37cf7c486ef73f88d4ad6352eeda6ca7136b042', '[\"*\"]', '2025-05-17 06:25:19', NULL, '2025-05-17 06:11:34', '2025-05-17 06:25:19');
+(92, 'App\\Models\\User', 1, 'auth_token', '1aab74d2ffd2727094823b3ff37cf7c486ef73f88d4ad6352eeda6ca7136b042', '[\"*\"]', '2025-05-17 06:59:23', NULL, '2025-05-17 06:11:34', '2025-05-17 06:59:23'),
+(93, 'App\\Models\\User', 1, 'auth_token', 'c63407088c1f3451dc3ef73d3e733a616b0d743a122dea04ff216d4e7a166d17', '[\"*\"]', '2025-05-17 07:02:51', NULL, '2025-05-17 07:02:50', '2025-05-17 07:02:51'),
+(94, 'App\\Models\\User', 1, 'auth_token', '5b84f71cc78d59438fa066378c4c08a34f1661f9f3a42abd6cd02edb85f0e3f0', '[\"*\"]', '2025-05-17 07:23:49', NULL, '2025-05-17 07:05:34', '2025-05-17 07:23:49'),
+(95, 'App\\Models\\User', 1, 'auth_token', 'c0de9710a799d3dc83aab2af4dbdd214f32e272beb5763e853b6b09030d9764e', '[\"*\"]', '2025-05-17 07:24:34', NULL, '2025-05-17 07:24:34', '2025-05-17 07:24:34'),
+(96, 'App\\Models\\User', 1, 'auth_token', '71ffde8ddf8ad83ec90605f4f69f950f580f98b87d178af101acdd4f581390f3', '[\"*\"]', '2025-05-17 08:32:42', NULL, '2025-05-17 07:26:02', '2025-05-17 08:32:42'),
+(97, 'App\\Models\\User', 1, 'auth_token', '4e6db5e0c22cf1d89078d578d0e132e539279f94285a26072342be975ac89ea2', '[\"*\"]', '2025-05-17 08:37:35', NULL, '2025-05-17 08:33:07', '2025-05-17 08:37:35'),
+(98, 'App\\Models\\User', 1, 'auth_token', '32b97aa6e794e2f0879555bed7eb718a58edc3c7599d4efa9843579301a72805', '[\"*\"]', '2025-05-17 08:40:34', NULL, '2025-05-17 08:37:58', '2025-05-17 08:40:34'),
+(99, 'App\\Models\\User', 1, 'auth_token', 'acbc084ff0e38f0d78e0e63e13a94ca54f9b58d3b2e46c54d789c593c1b0d456', '[\"*\"]', '2025-05-17 08:40:57', NULL, '2025-05-17 08:40:45', '2025-05-17 08:40:57'),
+(100, 'App\\Models\\User', 1, 'auth_token', 'a672075f463fe99c4e7c3a25977789967766d55b634445ec47815acf8e7a6ae1', '[\"*\"]', '2025-05-17 08:44:31', NULL, '2025-05-17 08:41:52', '2025-05-17 08:44:31'),
+(101, 'App\\Models\\User', 1, 'auth_token', '9cd78facfff3b0b27d1a5a020bf90cff1de477e0fbd455f1e86c2cea1a88ee44', '[\"*\"]', '2025-05-17 10:08:51', NULL, '2025-05-17 08:44:41', '2025-05-17 10:08:51'),
+(102, 'App\\Models\\User', 1, 'auth_token', '0eb7f04d0cce1414ca7a8d05d154965e97e1000488de3cfb91666b0c74151c50', '[\"*\"]', '2025-05-17 12:13:29', NULL, '2025-05-17 10:57:14', '2025-05-17 12:13:29'),
+(103, 'App\\Models\\User', 1, 'auth_token', '38297dad4fd3ec329b6006ae1dd406c4f4f8bdb1b84dc0193e322ca027db8e63', '[\"*\"]', '2025-05-17 13:08:31', NULL, '2025-05-17 12:52:03', '2025-05-17 13:08:31'),
+(104, 'App\\Models\\User', 1, 'auth_token', 'c03b36afd474b3436c6c47ae0b88f2098968c7061163ba9f2a0620319d24d981', '[\"*\"]', '2025-05-17 13:16:47', NULL, '2025-05-17 13:16:23', '2025-05-17 13:16:47'),
+(105, 'App\\Models\\User', 1, 'auth_token', 'e7abeba5dfd4cda1c6c089d9604ed4401689d129cb3b405c6ab2fd1c71f645ce', '[\"*\"]', '2025-05-17 13:42:12', NULL, '2025-05-17 13:42:11', '2025-05-17 13:42:12'),
+(106, 'App\\Models\\User', 1, 'auth_token', '28d2d9efba3b728a5b2fd1a2ce7235de5b4a6d14a761beaf5d9b938b0a8f7417', '[\"*\"]', '2025-05-17 13:42:34', NULL, '2025-05-17 13:42:31', '2025-05-17 13:42:34'),
+(107, 'App\\Models\\User', 11, 'auth_token', '3818b7d95cc0ae65d6bd7d9fc2c320e3e5820d656b2e2b23e5d4448630601967', '[\"*\"]', '2025-05-17 13:43:38', NULL, '2025-05-17 13:43:37', '2025-05-17 13:43:38'),
+(108, 'App\\Models\\User', 15, 'auth_token', '17978cca6613e5021d679f5a7c12de737a3510470c492d3b7aa7ffcd36ddf097', '[\"*\"]', '2025-05-17 13:49:42', NULL, '2025-05-17 13:49:26', '2025-05-17 13:49:42'),
+(109, 'App\\Models\\User', 15, 'auth_token', '30ef317519b8303b5f14259d3c6489b634595c4cafef23b133dea2e7d6a39f25', '[\"*\"]', '2025-05-17 13:50:19', NULL, '2025-05-17 13:50:18', '2025-05-17 13:50:19'),
+(110, 'App\\Models\\User', 1, 'auth_token', 'b6bcd90d5363f3b0afe98d67ed40bc7009b706b8f36a98a7e96675ff70a6b563', '[\"*\"]', '2025-05-18 14:53:56', NULL, '2025-05-18 14:33:52', '2025-05-18 14:53:56'),
+(111, 'App\\Models\\User', 15, 'auth_token', '5fa496094063abba1c309594bcdb6d979bb450ddcb23b2fc1908adf615ca96b1', '[\"*\"]', '2025-05-18 14:59:59', NULL, '2025-05-18 14:55:10', '2025-05-18 14:59:59'),
+(112, 'App\\Models\\User', 15, 'auth_token', '2a588355d5dbad3c5b92a414a5cff7ec3679f58ca8b68aab6c07cf4efb278642', '[\"*\"]', '2025-05-18 15:01:31', NULL, '2025-05-18 15:01:03', '2025-05-18 15:01:31');
 
 -- --------------------------------------------------------
 
@@ -270,6 +320,7 @@ CREATE TABLE `users` (
   `email_verification_token` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `role` tinyint NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -278,17 +329,18 @@ CREATE TABLE `users` (
 -- Дамп данных таблицы `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `avatar_url`, `is_verified`, `email_verification_token`, `phone`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Kirill', 'kirik@mail.ru', NULL, '$2y$10$cJliuQa6Sqdu8UV9bFVdRO0/UWeQYw8s0lnip9iQtc6VLGSDhvVtO', '/storage/avatars/TD1cPdhegiHwsUGdhcQYXybx7eOJBtjFURuKTIN6.png', 1, NULL, NULL, NULL, '2025-05-12 08:02:48', '2025-05-17 01:08:32'),
-(2, 'kirill', 'ki2rik@mail.ru', NULL, '$2y$10$/xte9F7rr1DbFaLDvnYCm.pwPEeRwkfbFOK13IRHIkuFfBIbAub2q', '/storage/avatars/xQFyrR7OnoytpaPRtBF0oa4RcIky41HLnGxQhomG.jpg', 0, NULL, NULL, NULL, '2025-05-12 08:04:39', '2025-05-12 08:04:39'),
-(4, 'Паша', 'kirik21@mail.ru', NULL, '$2y$10$Shyd6tYhj/qh8tTtPvX2ResieIgKG1/3BBXtqbLu7CFmqWeV6uIRu', '/storage/avatars/8diBBPCXcPwaBnmiLnlgjaKCgAXQI7zDCyYpEaDD.png', 0, NULL, NULL, NULL, '2025-05-13 02:35:37', '2025-05-13 02:35:37'),
-(5, 'Kirill Afanasev', 'kirik2551@mail.ru', NULL, '$2y$10$fPhjsAYCfZs0A7l8qF.y1OVqzGIxLq/H3liKyocWGxItzTUMMt7R.', '/storage/avatars/dZsMjVLs77bF35u5CtLkwYpF1x6rahyFKDwD1MCh.png', 0, NULL, NULL, NULL, '2025-05-13 03:59:30', '2025-05-13 03:59:30'),
-(6, 'марк', 'mark1@mail.ru', NULL, '$2y$10$TUca6AERC07KcYTsqVARh.eK4UDpP1cxaqbivYP4BcLV0yW/RXOtG', '/storage/avatars/7FS6J1QkRweCuRqjISkQuafNgb53aagAjAyiB4lA.png', 0, NULL, '89093730622', NULL, '2025-05-13 04:01:08', '2025-05-13 04:01:08'),
-(7, 'марк2', 'mark11@mail.ru', NULL, '$2y$10$UiSBxSg0nLarHcvxYee3R.6IdwB9428t1y7cbT5qvuX/VcjmFeIQ6', '/storage/avatars/Rx2Xj3H82UGYVPxYjFV92HmoKCtQRCZ2hs6jAloe.jpg', 0, NULL, '89093730622', NULL, '2025-05-13 04:01:56', '2025-05-13 04:01:56'),
-(8, 'Kirill Afanasev', 'mark112@mail.ru', NULL, '$2y$10$3tZOkPxpINA51Bd5/sWbAeSfFPnyCz40PXER1ruIaOqachO9Iu0EW', '/storage/avatars/jPQno7LjF2lv6NGmLi6fw9jgtUL1T5S4nibpwSF6.jpg', 0, 'te50XW3YhGFOzUefvooZBvQkYLV2FRGPTkSjN4tN2VKRcM70UwGPSwyiLvMgemqq', '+7-909-393-99-39', NULL, '2025-05-13 04:09:21', '2025-05-13 05:11:29'),
-(9, 'Kirill Afanasev тест', 'mark2112@mail.ru', NULL, '$2y$10$kmwabAU2vdYo4upA4vOa2edMeTni1cs0x.vqAvFHwe94Dj0hOI6ly', '/storage/avatars/T5hOXxVb7C8BixWPGZMtaRqeH3JW7zK4hRFaByJU.jpg', 0, NULL, '+7-909-393-93-99', NULL, '2025-05-13 07:01:42', '2025-05-13 07:01:42'),
-(10, 'Kirill Afanasev тест', 'mark112112@mail.ru', NULL, '$2y$10$.0kOe/axUgbailMNSjhyHeU2yD.UCtxtNyJqITM18P4XuHg2DVZES', '/storage/avatars/I92C5fuCXk7fzk1GLMkC6ztfAlahazJ3zEuAgYSR.jpg', 0, NULL, '+7-909-393-93-99', NULL, '2025-05-13 07:01:49', '2025-05-13 07:01:49'),
-(11, 'Тест', 'utipov36@gmail.com', NULL, '$2y$10$lv0mC4S4sXKbCpkYsS2UXu.1sDdJbvpSp3KC.G21uxNVD5S9k3xq6', '/storage/avatars/eF1uYZhAR1FuORRK0eTB0ZiYC8B6nqDo0r7rBL0y.jpg', 1, NULL, '+7-909-393-93-80', NULL, '2025-05-13 07:02:38', '2025-05-16 07:51:03');
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `avatar_url`, `is_verified`, `email_verification_token`, `phone`, `remember_token`, `role`, `created_at`, `updated_at`) VALUES
+(1, 'Kirill', 'kirik@mail.ru', NULL, '$2y$10$cJliuQa6Sqdu8UV9bFVdRO0/UWeQYw8s0lnip9iQtc6VLGSDhvVtO', '/storage/avatars/TD1cPdhegiHwsUGdhcQYXybx7eOJBtjFURuKTIN6.png', 1, NULL, NULL, NULL, 0, '2025-05-12 08:02:48', '2025-05-17 01:08:32'),
+(2, 'kirill', 'ki2rik@mail.ru', NULL, '$2y$10$/xte9F7rr1DbFaLDvnYCm.pwPEeRwkfbFOK13IRHIkuFfBIbAub2q', '/storage/avatars/xQFyrR7OnoytpaPRtBF0oa4RcIky41HLnGxQhomG.jpg', 0, NULL, NULL, NULL, 0, '2025-05-12 08:04:39', '2025-05-12 08:04:39'),
+(4, 'Паша', 'kirik21@mail.ru', NULL, '$2y$10$Shyd6tYhj/qh8tTtPvX2ResieIgKG1/3BBXtqbLu7CFmqWeV6uIRu', '/storage/avatars/8diBBPCXcPwaBnmiLnlgjaKCgAXQI7zDCyYpEaDD.png', 0, NULL, NULL, NULL, 0, '2025-05-13 02:35:37', '2025-05-13 02:35:37'),
+(5, 'Kirill Afanasev', 'kirik2551@mail.ru', NULL, '$2y$10$fPhjsAYCfZs0A7l8qF.y1OVqzGIxLq/H3liKyocWGxItzTUMMt7R.', '/storage/avatars/dZsMjVLs77bF35u5CtLkwYpF1x6rahyFKDwD1MCh.png', 0, NULL, NULL, NULL, 0, '2025-05-13 03:59:30', '2025-05-13 03:59:30'),
+(6, 'марк', 'mark1@mail.ru', NULL, '$2y$10$TUca6AERC07KcYTsqVARh.eK4UDpP1cxaqbivYP4BcLV0yW/RXOtG', '/storage/avatars/7FS6J1QkRweCuRqjISkQuafNgb53aagAjAyiB4lA.png', 0, NULL, '89093730622', NULL, 0, '2025-05-13 04:01:08', '2025-05-13 04:01:08'),
+(7, 'марк2', 'mark11@mail.ru', NULL, '$2y$10$UiSBxSg0nLarHcvxYee3R.6IdwB9428t1y7cbT5qvuX/VcjmFeIQ6', '/storage/avatars/Rx2Xj3H82UGYVPxYjFV92HmoKCtQRCZ2hs6jAloe.jpg', 0, NULL, '89093730622', NULL, 0, '2025-05-13 04:01:56', '2025-05-13 04:01:56'),
+(8, 'Kirill Afanasev', 'mark112@mail.ru', NULL, '$2y$10$3tZOkPxpINA51Bd5/sWbAeSfFPnyCz40PXER1ruIaOqachO9Iu0EW', '/storage/avatars/jPQno7LjF2lv6NGmLi6fw9jgtUL1T5S4nibpwSF6.jpg', 0, 'te50XW3YhGFOzUefvooZBvQkYLV2FRGPTkSjN4tN2VKRcM70UwGPSwyiLvMgemqq', '+7-909-393-99-39', NULL, 0, '2025-05-13 04:09:21', '2025-05-13 05:11:29'),
+(9, 'Kirill Afanasev тест', 'mark2112@mail.ru', NULL, '$2y$10$kmwabAU2vdYo4upA4vOa2edMeTni1cs0x.vqAvFHwe94Dj0hOI6ly', '/storage/avatars/T5hOXxVb7C8BixWPGZMtaRqeH3JW7zK4hRFaByJU.jpg', 0, NULL, '+7-909-393-93-99', NULL, 0, '2025-05-13 07:01:42', '2025-05-13 07:01:42'),
+(10, 'Kirill Afanasev тест', 'mark112112@mail.ru', NULL, '$2y$10$.0kOe/axUgbailMNSjhyHeU2yD.UCtxtNyJqITM18P4XuHg2DVZES', '/storage/avatars/I92C5fuCXk7fzk1GLMkC6ztfAlahazJ3zEuAgYSR.jpg', 0, NULL, '+7-909-393-93-99', NULL, 0, '2025-05-13 07:01:49', '2025-05-13 07:01:49'),
+(11, 'Тест', 'utipov36@gmail.com', NULL, '$2y$10$lv0mC4S4sXKbCpkYsS2UXu.1sDdJbvpSp3KC.G21uxNVD5S9k3xq6', '/storage/avatars/eF1uYZhAR1FuORRK0eTB0ZiYC8B6nqDo0r7rBL0y.jpg', 1, NULL, '+7-909-393-93-80', NULL, 0, '2025-05-13 07:02:38', '2025-05-16 07:51:03'),
+(15, 'admin', 'admin@gmail.com', NULL, '$2y$10$MdMtZNRxEo8cypoSk.ZOHuaFnxpZnkdBJZc27JVHhrjNyNJDTwJhm', '/storage/avatars/vnwEaWKlFN8l0keNfmDt8NTmgvPRIxVfVITiFddI.jpg', 0, NULL, '+7-800-555-35-55', NULL, 1, '2025-05-17 13:49:11', '2025-05-17 13:49:11');
 
 --
 -- Индексы сохранённых таблиц
@@ -300,6 +352,14 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `av
 ALTER TABLE `cars`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `cars_license_plate_unique` (`license_plate`);
+
+--
+-- Индексы таблицы `car_bookings`
+--
+ALTER TABLE `car_bookings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `car_bookings_car_id_foreign` (`car_id`),
+  ADD KEY `car_bookings_user_id_foreign` (`user_id`);
 
 --
 -- Индексы таблицы `car_images`
@@ -353,6 +413,12 @@ ALTER TABLE `cars`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT для таблицы `car_bookings`
+--
+ALTER TABLE `car_bookings`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+
+--
 -- AUTO_INCREMENT для таблицы `car_images`
 --
 ALTER TABLE `car_images`
@@ -368,23 +434,30 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT для таблицы `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT для таблицы `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
 
 --
 -- AUTO_INCREMENT для таблицы `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Ограничения внешнего ключа сохраненных таблиц
 --
+
+--
+-- Ограничения внешнего ключа таблицы `car_bookings`
+--
+ALTER TABLE `car_bookings`
+  ADD CONSTRAINT `car_bookings_car_id_foreign` FOREIGN KEY (`car_id`) REFERENCES `cars` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `car_bookings_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Ограничения внешнего ключа таблицы `car_images`

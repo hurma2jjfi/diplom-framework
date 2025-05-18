@@ -382,6 +382,65 @@ onMounted(() => {
 
 
 <style scoped>
+/* Родитель должен иметь position: relative */
+.parent-container {
+  position: relative;
+  overflow: visible; /* чтобы круг не обрезался */
+  height: 100px; /* пример высоты */
+}
+
+/* Круг */
+.circle {
+  position: absolute;
+  top: 10px;           /* строго сверху */
+  left: 110%;       /* старт справа за пределами */
+  width: 50px;
+  height: 50px;
+  background-color: #FF0B8F;
+  border-radius: 50%;
+  animation: chaoticMove 8s linear infinite;
+  transform-origin: center;
+  pointer-events: none;
+  z-index: 10;
+  margin-top: 120px;
+}
+
+@keyframes chaoticMove {
+  0% {
+    left: 50%;
+    top: 0;
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  30% {
+    left: 80%;
+    top: 3px; /* небольшой хаотичный сдвиг */
+    transform: rotate(15deg);
+  }
+  50% {
+    left: 50%;
+    top: 0;
+    transform: rotate(-15deg);
+  }
+  70% {
+    left: 20%;
+    top: 2px;
+    transform: rotate(10deg);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: -10%;
+    top: 0;
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+}
+
 .wrapper {
   max-width: 1100px;
   margin: 0 auto;

@@ -5,6 +5,7 @@ import Login from '../views/Login.vue';
 import Settings from '../views/Settings.vue';
 import CarDetails from '../../components/pages/CarDetails.vue';
 import Orders from '../../components/pages/Orders.vue';
+import AdminPage from '../../components/pages/AdminPage.vue';
 
 const routes = [
   { path: '/', component: Main },
@@ -13,6 +14,7 @@ const routes = [
   { path: '/settings', component: Settings, meta: { requiresAuth: true } }, // добавляем мета-флаг
   { path: '/car/:id', component: CarDetails, name: 'CarDetails' }, // 
   { path: '/orders', component: Orders, meta: { requiresAuth: true } }, // добавляем мета-флаг
+  { path: '/admin', component: AdminPage, meta: { requiresAuth: true } }, // добавляем мета-флаг
 
 ];
 

@@ -54,11 +54,15 @@ async function handleLogin() {
 
     localStorage.setItem('token', response.data.access_token);
 
-    // Сразу обновляем store!
+    // Обновляем store
     await userStore.fetchUser();
 
-    // Перенаправляем на главную
-    router.push('/');
+    // Проверяем роль пользователя и редиректим
+    if (userStore.user.role === 1) {
+      router.push('/admin');
+    } else {
+      router.push('/');
+    }
 
     // Можно вызвать событие, если есть слушатели
     window.dispatchEvent(new Event('storage'));
@@ -68,6 +72,7 @@ async function handleLogin() {
     loading.value = false;
   }
 }
+
 </script>
 
 
